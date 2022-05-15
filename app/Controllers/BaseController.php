@@ -8,6 +8,7 @@ use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
+use App\Models\UserModel;
 
 /**
  * Class BaseController
@@ -37,6 +38,8 @@ class BaseController extends Controller
      */
     protected $helpers = [];
 
+    public $user;
+
     /**
      * Constructor.
      */
@@ -47,6 +50,12 @@ class BaseController extends Controller
 
         // Preload any models, libraries, etc, here.
 
-        // E.g.: $this->session = \Config\Services::session();
+        $this->session = \Config\Services::session();
+
+        $user_id = $this->session->get('user_id');
+        if ($user_id) {
+            $this->user = (new UserModel())->find($user_id);
+        }
+
     }
 }
