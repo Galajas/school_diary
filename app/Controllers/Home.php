@@ -24,7 +24,8 @@ class Home extends BaseController
             if (!$user) {
                 $this->validator->setError('email', 'Bad password');
             } else {
-                $this->session->set('user_id', $user['id']);
+                unset($user['password']);
+                $this->session->set('user', $user);
                 switch ($user['type']) {
                     case 'director':
                         $route = '/director/index';

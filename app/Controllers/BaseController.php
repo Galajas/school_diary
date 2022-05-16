@@ -52,10 +52,5 @@ class BaseController extends Controller
 
         $this->session = \Config\Services::session();
 
-        $user_id = $this->session->get('user_id');
-        if ($user_id) {
-            $this->user = (new UserModel())->find($user_id);
-        }
-
     }
 }
