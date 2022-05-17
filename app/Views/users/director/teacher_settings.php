@@ -3,16 +3,7 @@
         border: 1px solid black;
     }
 
-    .sectionTables {
-        display: flex;
-    }
-
-    .sectionTables, div {
-        margin-right: 20px;
-    }
 </style>
-
-<h1>Direktoriaus aplinka</h1>
 
 <? if (isset($errors)) { ?>
     <?= $errors ?>
@@ -21,7 +12,8 @@
     <?= $success ?>
 <? } ?>
 
-<section>
+<a href="<?= base_url('/director/index') ?>">Gryzti atgal</a>
+
     <h3>
         Mokytoju valdymas
     </h3>
@@ -50,70 +42,31 @@
     </form>
 
     <div class="sectionTables">
-
-        <div>
             <h4>
                 Mokytoju sarasas
             </h4>
             <table class="tableStyle">
                 <tr>
+                    <th>ID</th>
+                    <th>el. Pastas</th>
                     <th>Vardas</th>
                     <th>Pavarde</th>
+                    <th>Klases aukletojas</th>
                     <th>Pamoka</th>
-                    <th>Klase</th>
                     <th>Veiksmas</th>
                 </tr>
                 <? foreach ($teachers as $teacher) { ?>
                     <tr>
                         <td><?= $teacher['id'] ?></td>
-                        <td><?= $teacher['class_id'] ?? null ?></td>
-                        <td><?= $teacher['lesson_id'] ?? null ?></td>
+                        <td><?= $teacher['email'] ?? null ?></td>
+                        <td><?= $teacher['firstname'] ?? null ?></td>
+                        <td><?= $teacher['lastname'] ?? null ?></td>
+                        <td><?= $teacher['class'] ?? null ?></td>
+                        <td><?= $teacher['lesson'] ?? null ?></td>
                         <td>
                             <a href="<?= base_url('/director/editTeacher/' . $teacher['id']) ?>">REDAGUOTI</a>
                         </td>
                     </tr>
                 <? } ?>
-
             </table>
-        </div>
-
-        <div>
-            <table class="tableStyle">
-                <h4>
-                    Klasiu sarasas
-                </h4>
-                <tr>
-                    <th>Klase</th>
-                    <th>Max pamoku</th>
-                </tr>
-                <?php
-                foreach ($classes as $class) { ?>
-                    <tr>
-                        <td><?= $class['title'] ?></td>
-                        <td><?= $class['max_week_lessons'] ?></td>
-                    </tr>
-                    <?php
-                }
-                ?>
-            </table>
-        </div>
-        <div>
-            <table class="tableStyle">
-                <h4>
-                    Pamoku sarasas
-                </h4>
-                <tr>
-                    <th>Pavadinimas</th>
-                </tr>
-                <?php
-                foreach ($lessons as $lesson) { ?>
-                    <tr>
-                        <td><?= $lesson['title'] ?></td>
-                    </tr>
-                    <?php
-                }
-                ?>
-            </table>
-        </div>
     </div>
-</section>

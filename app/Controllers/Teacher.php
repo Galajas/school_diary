@@ -8,15 +8,13 @@ class Teacher extends BaseController
 {
     public function __construct()
     {
-
+        if (session()->user['type'] != 'teacher') {
+            dd('galima tik mokytojui');
+        }
     }
 
     public function index()
     {
-        if($this->user['type'] != 'teacher'){
-            dd('klaida');
-        }
-
-        return view('users/teacher');
+        return view('users/teacher/teacher');
     }
 }

@@ -41,7 +41,6 @@ class Home extends BaseController
                 return redirect()->to(base_url($route));
             }
         }
-
         return view('login', ['errors' => $this->validator->listErrors()]);
     }
 }

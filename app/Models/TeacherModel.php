@@ -61,4 +61,14 @@ class TeacherModel extends Model
         }
         return false;
     }
+
+    public function findAllWithRelations()
+    {
+        return $this
+            ->select('teachers.id, users.email, users.firstname, users.lastname, lessons.title as lesson, classes.title as class')
+            ->join('users', 'users.id = teachers.user_id')
+            ->join('lessons', 'lessons.id = teachers.lesson_id', 'left')
+            ->join('classes', 'classes.id = teachers.class_id', 'left')
+            ->findAll();
+    }
 }

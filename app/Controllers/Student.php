@@ -8,15 +8,13 @@ class Student extends BaseController
 {
     public function __construct()
     {
-
+        if(session()->user['type'] != 'student'){
+            dd('galima tik studentui');
+        }
     }
 
     public function index()
     {
-        if($this->user['type'] != 'student'){
-            dd('klaida');
-        }
-
-        return view('users/student');
+        return view('users/student/student');
     }
 }

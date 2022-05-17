@@ -1,12 +1,11 @@
 <h1>Mokytojo redagavimas</h1>
-<hr>
 <? if (isset($errors)) { ?>
     <?= $errors ?>
 <? } ?>
 <? if (isset($success)) { ?>
     <?= $success ?>
 <? } ?>
-<hr>
+
 <form action="<?= base_url('/director/updateTeacher/' . $teacher['id']) ?>" method="post">
     <fieldset>
         <legend>Pridėti mokytoją:</legend>
