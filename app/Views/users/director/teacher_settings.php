@@ -64,7 +64,8 @@
                         <td><?= $teacher['class'] ?? null ?></td>
                         <td><?= $teacher['lesson'] ?? null ?></td>
                         <td>
-                            <a href="<?= base_url('/director/editTeacher/' . $teacher['id']) ?>">REDAGUOTI</a>
+                            <a href="<?= base_url('/director/editTeacher/' . $teacher['id']) ?>">REDAGUOTI</a> |
+                            <a href="<?= base_url('/director/deleteTeacher/' . $teacher['id']) ?>">Ištrinti</a>
                         </td>
                     </tr>
                 <? } ?>

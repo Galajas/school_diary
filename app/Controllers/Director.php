@@ -45,25 +45,8 @@ class Director extends BaseController
         return view('users/director/home', $data);
     }
 
-    public function classes()
+    public function teacherSettings()
     {
-        $data = [
-            'classes' => $this->classModel->findAll(),
-        ];
-
-        return view('users/director/classes', $data);
-    }
-
-    public function lessons()
-    {
-            $data = [
-                    'lessons' => $this->lessonModel->findAll()
-                    ];
-    
-            return view('users/director/lessons', $data);
-    }
-
-    public function teacherSettings() {
         $data = [
             'classes' => $this->classModel->findAll(),
             'lessons' => $this->lessonModel->findAll(),
@@ -160,7 +143,20 @@ class Director extends BaseController
         return redirect()->to(base_url('/director/teacherSettings'))->with('errors', 'mokytojas nerastas');
     }
 
-    public function studentSettings($id = null) {
+    public function deleteTeacher($id)
+    {
+        $teacher = $this->teacherModel->find($id);
+        if ($teacher) {
+            $this->userModel->delete($teacher['user_id']);
+            $this->teacherModel->delete($teacher['id']);
+
+            return redirect()->to(base_url('/director/teacherSettings'))->with('success', 'Mokytojas sėkimingai ištrintas');
+        }
+        return redirect()->to(base_url('/director/teacherSettings'))->with('errors', 'Mokytojas nerastas');
+    }
+
+    public function studentSettings($id = null)
+    {
         $data = [
             'classes' => $this->classModel->findAll(),
             'students' => $this->studentModel->getWithRelations(),
@@ -208,6 +204,7 @@ class Director extends BaseController
     public function updateStudent(int $id)
     {
         $student = $this->studentModel->getWithRelations($id);
+
         if ($student) {
             if ($this->validate([
                 'password' => 'permit_empty|min_length[2]',
@@ -251,4 +248,147 @@ class Director extends BaseController
         }
         return redirect()->to(base_url('/director/studentSettings'))->with('errors', 'Moksleivis nerastas');
     }
+
+    public function lessons($id = null)
+    {
+        $data = [
+            'errors' => $this->session->getFlashdata('errors') ?? null,
+            'success' => $this->session->getFlashdata('success') ?? null,
+            'lessons' => $this->lessonModel->findAll()
+        ];
+
+        if ($id != null) {
+            $data['lesson'] = $this->lessonModel->find($id);
+        }
+
+        return view('users/director/lessons', $data);
+    }
+
+    public function createLesson()
+    {
+        if ($this->validate([
+            'lesson' => 'required|min_length[2]|max_length[60]|is_unique[lessons.title]',
+        ])) {
+            $lesson = [
+                'title' => $this->request->getVar('lesson'),
+            ];
+
+            $this->lessonModel->insert($lesson);
+
+            return redirect()->to(base_url('/director/lessons'))->with('success', 'Pamoka sėkimingai sukurta');
+        } else {
+            return redirect()->to(base_url('/director/lessons'))->with('errors', $this->validator->listErrors());
+        }
+    }
+
+    public function updateLesson(int $id)
+    {
+        $lesson = $this->lessonModel->find($id);
+
+        if ($lesson) {
+            if ($this->validate([
+                'lesson' => 'required|min_length[2]|max_length[60]|is_unique[lessons.title,id,' . $id . ']',
+            ])) {
+                $lesson_title = [
+                    'title' => $this->request->getVar('lesson'),
+                ];
+
+                $this->lessonModel->update($lesson['id'], $lesson_title);
+
+                return redirect()->to(base_url('/director/lessons'))->with('success', 'Pamoka sėkimingai atnaujinta');
+            } else {
+                $errors = $this->validator->listErrors();
+            }
+        } else {
+            $errors = 'Klaida';
+        }
+        return redirect()->to(base_url('/director/lessons'))->with('errors', $errors);
+    }
+
+    public function deleteLesson($id)
+    {
+        $lesson = $this->lessonModel->find($id);
+        if ($lesson) {
+                $this->lessonModel->delete($lesson['id']);
+                $this->teacherModel->set('lesson_id', 0, false)->where('lesson_id', $lesson['id'])->update();
+
+                return redirect()->to(base_url('/director/lessons'))->with('success', 'Pamoka sėkimingai ištrinta');
+        } else {
+            $errors = 'Klaida';
+        }
+        return redirect()->to(base_url('/director/lessons'))->with('errors', $errors);
+    }
+
+    public function classes($id = null)
+    {
+        $data = [
+            'classes' => $this->classModel->findAll(),
+        ];
+
+        if ($id != null) {
+            $data['class'] = $this->classModel->find($id);
+        }
+
+        return view('users/director/classes', $data);
+    }
+
+    public function createClass() {
+        if ($this->validate([
+            'title' => 'required|exact_length[2,3]|is_unique[classes.title]',
+            'max_week_lessons' => 'required|integer|exact_length[1,2]'
+        ])) {
+            $class_data = [
+                'title' => $this->request->getVar('title'),
+                'max_week_lessons' => $this->request->getVar('max_week_lessons'),
+            ];
+
+            $this->classModel->insert($class_data);
+
+            return redirect()->to(base_url('/director/classes'))->with('success', 'Klasė sėkimingai sukurta');
+        } else {
+            return redirect()->to(base_url('/director/classes'))->with('errors', $this->validator->listErrors());
+        }
+    }
+
+    public function updateClass(int $id)
+    {
+        $class_update = $this->classModel->find($id);
+
+        if ($class_update) {
+            if ($this->validate([
+                'title' => 'required|min_length[2]|max_length[60]|is_unique[classes.title]',
+                'max_week_lessons' => 'required|min_length[2]|max_length[60]'
+            ])) {
+                $class_data = [
+                    'title' => $this->request->getVar('title'),
+                    'max_week_lessons' => $this->request->getVar('max_week_lessons'),
+                ];
+
+                $this->classModel->update($class_update['id'], $class_data);
+
+                return redirect()->to(base_url('/director/classes'))->with('success', 'Klasė sėkimingai atnaujinta');
+            } else {
+                $errors = $this->validator->listErrors();
+            }
+        } else {
+            $errors = 'Klaida';
+        }
+        return redirect()->to(base_url('/director/classes'))->with('errors', $errors);
+    }
+
+    public function deleteClass($id)
+    {
+        $class = $this->classModel->find($id);
+        if ($class) {
+            $this->classModel->delete($class['id']);
+            $this->teacherModel->set('class_id', 0, false)->where('class_id', $class['id'])->update();
+            $this->studentModel->set('class_id', 0, false)->where('class_id', $class['id'])->update();
+
+            return redirect()->to(base_url('/director/classes'))->with('success', 'Klasė sėkimingai ištrinta');
+        } else {
+            $errors = 'Klaida';
+        }
+        return redirect()->to(base_url('/director/classes'))->with('errors', $errors);
+    }
+
 }

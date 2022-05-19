@@ -87,7 +87,7 @@
                         <td><?= $student['lastname'] ?? null ?></td>
                         <td><?= $student['class'] ?? null ?></td>
                         <td>
-                            <a href="<?= base_url('/director/editStudent/' . $student['id']) ?>">REDAGUOTI</a> |
+                            <a href="<?= base_url('/director/studentSettings/' . $student['id']) ?>">REDAGUOTI</a> |
                             <a href="<?= base_url('/director/deleteStudent/' . $student['id']) ?>">Ištrinti</a>
                         </td>
                     </tr>
