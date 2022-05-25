@@ -20,9 +20,14 @@ class Director extends BaseController
 
     public function __construct()
     {
-        if (session()->user['type'] != 'director') {
-            dd('galima tik direktoriui');
+        if (isset(session()->user)) {
+            if (session()->user['type'] != 'director') {
+                dd('galima tik direktoriui');
+            }
+        } else {
+            dd('Prasome prisijungti');
         }
+
 
         $this->classModel = new ClassModel();
         $this->lessonModel = new LessonModel();
@@ -322,6 +327,8 @@ class Director extends BaseController
     public function classes($id = null)
     {
         $data = [
+            'errors' => $this->session->getFlashdata('errors') ?? null,
+            'success' => $this->session->getFlashdata('success') ?? null,
             'classes' => $this->classModel->findAll(),
         ];
 
@@ -352,11 +359,11 @@ class Director extends BaseController
 
     public function updateClass(int $id)
     {
-        $class_update = $this->classModel->find($id);
+        $class = $this->classModel->find($id);
 
-        if ($class_update) {
+        if ($class) {
             if ($this->validate([
-                'title' => 'required|min_length[2]|max_length[60]|is_unique[classes.title]',
+                'title' => 'required|min_length[2]|max_length[60]|is_unique[classes.title,id,' . $id . ']',
                 'max_week_lessons' => 'required|min_length[2]|max_length[60]'
             ])) {
                 $class_data = [
@@ -364,7 +371,7 @@ class Director extends BaseController
                     'max_week_lessons' => $this->request->getVar('max_week_lessons'),
                 ];
 
-                $this->classModel->update($class_update['id'], $class_data);
+                $this->classModel->update($class['id'], $class_data);
 
                 return redirect()->to(base_url('/director/classes'))->with('success', 'Klasė sėkimingai atnaujinta');
             } else {

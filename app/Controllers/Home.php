@@ -28,6 +28,7 @@ class Home extends BaseController
                 $this->session->set('user', $user);
                 switch ($user['type']) {
                     case 'director':
+
                         $route = '/director/index';
                         break;
                     case 'teacher':
@@ -37,10 +38,16 @@ class Home extends BaseController
                         $route = '/student/index';
                         break;
                 }
-
                 return redirect()->to(base_url($route));
             }
         }
         return view('login', ['errors' => $this->validator->listErrors()]);
+    }
+
+    public function logout() {
+
+        $this->session->remove('user');
+
+        return redirect()->to(base_url('/'));
     }
 }

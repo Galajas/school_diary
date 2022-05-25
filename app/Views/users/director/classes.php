@@ -13,12 +13,12 @@
 
 <a href="<?= base_url('/director/index') ?>">Gryzti atgal</a>
 
-<?php if (isset($class_update)) { ?>
-    <form action="<?= base_url('/director/updateClass/' . $class_update['id']) ?>" method="post">
+<?php if (isset($class)) { ?>
+    <form action="<?= base_url('/director/updateClass/' . $class['id']) ?>" method="post">
         <fieldset>
             <legend>Atnaujinti Klase:</legend>
-            Klasės pavadinimas: <input type="text" name="title" value="<?= $class_update['title'] ?>"><br>
-            Max pamoku: <input type="text" name="max_week_lessons" value="<?= $class_update['max_week_lessons'] ?>"><br>
+            Klasės pavadinimas: <input type="text" name="title" value="<?= $class['title'] ?>"><br>
+            Max pamoku: <input type="text" name="max_week_lessons" value="<?= $class['max_week_lessons'] ?>"><br>
             <input type="submit" value="Atnaujinti">
         </fieldset>
     </form>

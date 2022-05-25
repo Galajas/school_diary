@@ -71,4 +71,19 @@ class TeacherModel extends Model
             ->join('classes', 'classes.id = teachers.class_id', 'left')
             ->findAll();
     }
+
+    public function getWithRelations(int $id = null)
+    {
+        $data = $this
+            ->select('teachers.id, users.email, users.firstname, users.lastname, lessons.title as lesson, classes.title as class')
+            ->join('users', 'users.id = teachers.user_id')
+            ->join('lessons', 'lessons.id = teachers.lesson_id', 'left')
+            ->join('classes', 'classes.id = teachers.class_id', 'left');
+
+        if ($id != null) {
+            return $data->find($id);
+        } else {
+            return $data->findAll();
+        }
+    }
 }

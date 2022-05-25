@@ -13,6 +13,7 @@
 </style>
 
 <h1>Mokytojo aplinka</h1>
+<a href="<?= base_url('home/logout') ?>">Atsijungti</a>
 
 <? if (isset($errors)) { ?>
     <?= $errors ?>
@@ -21,10 +22,24 @@
     <?= $success ?>
 <? } ?>
 
+
+
 <?php if (isset($class)) { ?>
     <h4>
-        Mano klase: <?= $class['title'] ?>
+        Mano klase: <?= $class['title'] ?> <br>
+        Max pamoku per savaite: <?= $class['max_week_lessons'] ?><br>
+        Dėstoma pamoka: <?= $teacher['lesson'] ?>
     </h4>
+
+    <ul>
+        <li>
+            <a href="<?= base_url('/teacher/schedulesSettings') ?>">Auklėtinių tvarkarasčio kūrimas</a>
+        </li>
+        <li>
+            <a href="<?= base_url('/teacher/teacherLessons') ?>">Mano pamokų tvarkaraštis</a>
+        </li>
+    </ul>
+
     <div class="sectionTables">
         <div>
             <h4>

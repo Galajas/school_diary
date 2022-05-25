@@ -1,4 +1,5 @@
 <h1>Direktoriaus aplinka</h1>
+<a href="<?= base_url('home/logout') ?>">Atsijungti</a>
 
 <? if (isset($errors)) { ?>
     <?= $errors ?>
