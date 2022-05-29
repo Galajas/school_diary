@@ -7,9 +7,9 @@ use CodeIgniter\Model;
 class ScheduleModel extends Model
 {
     const WEEK_DAY_MONDAY = ['monday', 'Pirmadienis'];
-    const WEEK_DAY_TUESDAY= ['tuesday', 'Antradienis'];
+    const WEEK_DAY_TUESDAY = ['tuesday', 'Antradienis'];
     const WEEK_DAY_WEDNESDAY = ['wednesday', 'Trečiadienis'];
-    const WEEK_DAY_THURSDAY= ['thursday', 'Ketvirtadienis'];
+    const WEEK_DAY_THURSDAY = ['thursday', 'Ketvirtadienis'];
     const WEEK_DAY_FRIDAY = ['friday', 'Penktadienis'];
 
     const WEEK_DAYS = [
@@ -20,15 +20,15 @@ class ScheduleModel extends Model
         self::WEEK_DAY_FRIDAY
     ];
 
-    protected $DBGroup          = 'default';
-    protected $table            = 'schedules';
-    protected $primaryKey       = 'id';
+    protected $DBGroup = 'default';
+    protected $table = 'schedules';
+    protected $primaryKey = 'id';
     protected $useAutoIncrement = true;
-    protected $insertID         = 0;
-    protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
-    protected $protectFields    = true;
-    protected $allowedFields    = [
+    protected $insertID = 0;
+    protected $returnType = 'array';
+    protected $useSoftDeletes = false;
+    protected $protectFields = true;
+    protected $allowedFields = [
         'class_id',
         'lesson_number',
         'lesson_id',
@@ -39,27 +39,27 @@ class ScheduleModel extends Model
 
     // Dates
     protected $useTimestamps = false;
-    protected $dateFormat    = 'datetime';
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
-    protected $deletedField  = 'deleted_at';
+    protected $dateFormat = 'datetime';
+    protected $createdField = 'created_at';
+    protected $updatedField = 'updated_at';
+    protected $deletedField = 'deleted_at';
 
     // Validation
-    protected $validationRules      = [];
-    protected $validationMessages   = [];
-    protected $skipValidation       = false;
+    protected $validationRules = [];
+    protected $validationMessages = [];
+    protected $skipValidation = false;
     protected $cleanValidationRules = true;
 
     // Callbacks
     protected $allowCallbacks = true;
-    protected $beforeInsert   = [];
-    protected $afterInsert    = [];
-    protected $beforeUpdate   = [];
-    protected $afterUpdate    = [];
-    protected $beforeFind     = [];
-    protected $afterFind      = [];
-    protected $beforeDelete   = [];
-    protected $afterDelete    = [];
+    protected $beforeInsert = [];
+    protected $afterInsert = [];
+    protected $beforeUpdate = [];
+    protected $afterUpdate = [];
+    protected $beforeFind = [];
+    protected $afterFind = [];
+    protected $beforeDelete = [];
+    protected $afterDelete = [];
 
     static public function getLessons(int $class_id)
     {
@@ -75,5 +75,23 @@ class ScheduleModel extends Model
         }
 
         return $response;
+    }
+
+    public function getTeacherLessons(int $teacher_id, string $date = null)
+    {
+        if ($date == null) {
+            $date = date('Y-m-d');
+        }
+
+        $day = strtolower(date('l', strtotime($date)));
+
+        return $this
+            ->select('schedules.id, schedules.lesson_number, schedules.cabinet, lessons.title, classes.title as class, classes.id as classId')
+            ->join('lessons', 'lessons.id = schedules.lesson_id', 'left')
+            ->join('classes', 'classes.id = schedules.class_id', 'left')
+            ->where('teacher_id', $teacher_id)
+            ->where('week_day', $day)
+            ->orderBy('lesson_number', 'ASC')
+            ->findAll();
     }
 }

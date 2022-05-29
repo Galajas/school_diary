@@ -45,6 +45,8 @@ class BaseController extends Controller
      */
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
+        date_default_timezone_set('Europe/Vilnius');
+
         // Do Not Edit This Line
         parent::initController($request, $response, $logger);
 

@@ -36,7 +36,7 @@
             <a href="<?= base_url('/teacher/schedulesSettings') ?>">Auklėtinių tvarkarasčio kūrimas</a>
         </li>
         <li>
-            <a href="<?= base_url('/teacher/teacherLessons') ?>">Mano pamokų tvarkaraštis</a>
+            <a href="<?= base_url('/teacher/teacherSchedule') ?>">Mano pamokų tvarkaraštis</a>
         </li>
     </ul>
 

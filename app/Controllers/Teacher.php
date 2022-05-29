@@ -141,34 +141,36 @@ class Teacher extends BaseController
         return redirect()->to(base_url('/teacher/schedulesSettings'))->with('errors', $errors);
     }
 
-    public function teacherLessons() {
-
-
-        $date = date('l', strtotime("2022-05-25"));
-
+    public function teacherSchedule(string $date = null, string $show_class = null)
+    {
         $teacher = $this->teacherModel->where('user_id', session()->user['id'])->first();
 
-        $teacher_lessons = $this->scheduleModel
-            ->where('week_day', $date)
-            ->where('teacher_id', $teacher['id'])
-            ->findAll();
+        $data = [
+            'teacher_schedule' => $this->scheduleModel->getTeacherLessons($teacher['id'], $date),
+        ];
 
-        dd($teacher_lessons);
+        if ($date != null) {
+            $data['date'] = $date;
+        }
 
-//        $data = [
-//            'date' => date("Y-m-d"),
-//            'teacher_lessons' =>
-//        ];
+        if ($show_class != null) {
+            $data['show_class'] = $this->classModel->getStudents($show_class);
+        }
 
-
-
-        return view('users/teacher/teacher_lessons', $data);
+        return view('users/teacher/teacher_schedule', $data);
     }
 
-    public function showLessons() {
-        $selected_date = $this->request->getVar('selected_date');
-
-        dd($selected_date);
+    public function showLessons()
+    {
+        if ($this->validate([
+            'selected_date' => 'required|valid_date[Y-m-d]',
+        ])) {
+            $selected_date = $this->request->getVar('selected_date');
+            return redirect()->to(base_url('/teacher/teacherSchedule/' . $selected_date));
+        }
+        return redirect()->to(base_url('/teacher/teacherSchedule'))->with('errors', 'Bloga data');
     }
+
+
 
 }
