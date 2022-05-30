@@ -9,6 +9,10 @@ use App\Models\TeacherModel;
 use App\Models\StudentModel;
 use App\Models\UserModel;
 use App\Models\ScheduleModel;
+use App\Models\GradeModel;
+use App\Models\AttendanceModel;
+use App\Models\NoticeModel;
+
 
 class Teacher extends BaseController
 {
@@ -18,6 +22,9 @@ class Teacher extends BaseController
     protected $studentModel;
     protected $userModel;
     protected $scheduleModel;
+    protected $gradeModel;
+    protected $attendanceModel;
+    protected $noticeModel;
 
 
     public function __construct()
@@ -36,6 +43,9 @@ class Teacher extends BaseController
         $this->studentModel = new StudentModel();
         $this->userModel = new UserModel();
         $this->scheduleModel = new ScheduleModel();
+        $this->gradeModel = new GradeModel();
+        $this->attendanceModel = new AttendanceModel();
+        $this->noticeModel = new NoticeModel();
     }
 
     public function index()
@@ -147,6 +157,8 @@ class Teacher extends BaseController
 
         $data = [
             'teacher_schedule' => $this->scheduleModel->getTeacherLessons($teacher['id'], $date),
+            'errors' => $this->session->getFlashdata('errors') ?? null,
+            'success' => $this->session->getFlashdata('success') ?? null,
         ];
 
         if ($date != null) {
@@ -171,6 +183,88 @@ class Teacher extends BaseController
         return redirect()->to(base_url('/teacher/teacherSchedule'))->with('errors', 'Bloga data');
     }
 
+    public function studentAction(string $date = null, string $show_class = null, string $student_id = null)
+    {
+        $teacher = $this->teacherModel->where('user_id', session()->user['id'])->first();
+
+        if ($this->validate([
+            'student_action' => 'required',
+        ])) {
+            $student_action = $this->request->getVar('student_action');
+
+            $grades = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            $attendance_status = ['n', 'p'];
+            $positive = ['geras', 'šaunuolis', 'puikus', 'ger', 'blog', 'šaun', 'aktyvus', 'klusnus','pavyzdingas', 'aktyv', 'pavyzd'];
+            $positive = implode('|', $positive);
+
+            $negative = ['blogas', 'neklauso', 'blog', 'nekla', 'tingus', 'tingi'];
+            $negative = implode('|', $negative);
+
+            switch ($student_action) {
+                case in_array($student_action, $grades):
+                    $grade_data = [
+                        'lesson_id' => $teacher['lesson_id'],
+                        'teacher_id' => $teacher['id'],
+                        'student_id' => $student_id,
+                        'grade' => $student_action,
+                        'created_at' => $date
+                    ];
+                    $this->gradeModel->insert($grade_data);
+                    return redirect()->to(base_url('/teacher/teacherSchedule/' . $date . '/' . $show_class))->with('success', 'Pažymys sėkimingai įrašytas');
+                    break;
+                case in_array($student_action, $attendance_status):
+                    $attendance_data = [
+                        'lesson_id' => $teacher['lesson_id'],
+                        'teacher_id' => $teacher['id'],
+                        'student_id' => $student_id,
+                        'status' => $student_action,
+                        'created_at' => $date,
+                    ];
+                    $this->attendanceModel->insert($attendance_data);
+                    return redirect()->to(base_url('/teacher/teacherSchedule/' . $date . '/' . $show_class))->with('success', 'Lankomumas sėkimingai įrašyta');
+                    break;
+                case (preg_match('/'. $positive .'/', strtolower($student_action), $matches)):
+                    $positive_data = [
+                        'lesson_id' => $teacher['lesson_id'],
+                        'teacher_id' => $teacher['id'],
+                        'student_id' => $student_id,
+                        'message' => $student_action,
+                        'status' => 'positive',
+                        'created_at' => $date,
+                    ];
+                    $this->noticeModel->insert($positive_data);
+                    return redirect()->to(base_url('/teacher/teacherSchedule/' . $date . '/' . $show_class))->with('success', 'Pastaba sėkimingai įrašyta');
+                    break;
+                case (preg_match('/'. $negative .'/', strtolower($student_action), $matches)):
+                    $negative_data = [
+                        'lesson_id' => $teacher['lesson_id'],
+                        'teacher_id' => $teacher['id'],
+                        'student_id' => $student_id,
+                        'message' => $student_action,
+                        'status' => 'negative',
+                        'created_at' => $date,
+                    ];
+                    $this->noticeModel->insert($negative_data);
+                    return redirect()->to(base_url('/teacher/teacherSchedule/' . $date . '/' . $show_class))->with('success', 'Pastaba sėkimingai įrašyta');
+                    break;
+                default:
+                    $other_data = [
+                        'lesson_id' => $teacher['lesson_id'],
+                        'teacher_id' => $teacher['id'],
+                        'student_id' => $student_id,
+                        'message' => $student_action,
+                        'status' => 'other',
+                        'created_at' => $date,
+                    ];
+                    $this->noticeModel->insert($other_data);
+                    return redirect()->to(base_url('/teacher/teacherSchedule/' . $date . '/' . $show_class))->with('success', 'Pastaba sėkimingai įrašyta');
+                    break;
+            }
+
+
+        }
+        return redirect()->to(base_url('/teacher/teacherSchedule'))->with('errors', 'Neatpažintas veiksmas');
+    }
 
 
 }

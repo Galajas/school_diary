@@ -27,6 +27,10 @@ class CreateAttendanceTable extends Migration
                 'type' => 'INT',
                 'constraint' => 11,
             ],
+            'status' => [
+                'type' => 'ENUM',
+                'constraint' => ['n', 'p']
+            ],
             'created_at datetime default current_timestamp',
         ]);
         $this->forge->addKey('id', true);

@@ -73,7 +73,7 @@ if (isset($show_class)) {
                     Studentai
                 </th>
                 <th style="border: 0px">
-                    Veiksmas
+                    Veiksmas (p;n;1-10;pastaba)
                 </th>
             </tr>
     <?php
@@ -83,7 +83,10 @@ if (isset($show_class)) {
                     <?= $item['firstname'] ?> <?= $item['lastname'] ?>
                 </td>
                 <td >
-                    <input type="text">
+                    <form action="<?= base_url('/teacher/studentAction/'. ($date ?? date('Y-m-d')) . '/' . $item['class_id'] . '/' . $item['id']) ?>" method="post">
+                        <input name="student_action" type="text">
+                        <input type="submit" value="Įvesti">
+                    </form>
                 </td>
             </tr>
     <?php } ?>

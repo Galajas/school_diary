@@ -28,7 +28,6 @@ class Home extends BaseController
                 $this->session->set('user', $user);
                 switch ($user['type']) {
                     case 'director':
-
                         $route = '/director/index';
                         break;
                     case 'teacher':

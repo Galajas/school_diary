@@ -52,7 +52,7 @@ class ClassModel extends Model
     {
         if ($id != null) {
             $students = (new StudentModel)
-                ->select('students.id, users.email, users.firstname, users.lastname, students.user_id')
+                ->select('students.id, students.class_id, users.email, users.firstname, users.lastname, students.user_id')
                 ->join('users', 'users.id = students.user_id')
                 ->where('class_id', $id)->findAll();
         } else {
